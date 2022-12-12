@@ -1,2 +1,3 @@
 gym==0.21.0
 tminterface==0.5
+stable-baselines3==1.6.2
