@@ -188,7 +188,7 @@ class Trackmania(Client):
 
         # get simulation inputs to str
         inputs = iface.get_event_buffer().to_commands_str()
-        if ((self.sim_count+1) % 50 == 0) or (self.max_score < self.total_reward):
+        if ((self.sim_count+1) % 100 == 0) or (self.max_score < self.total_reward):
             save_simulation_inputs(inputs, str(self.sim_count+1) + "_" + str(self.race_time) + "_" + str(
                 int(self.total_reward)) + "_" + str(self.out_of_bounds) + "_" + str(int(self.win)))
 

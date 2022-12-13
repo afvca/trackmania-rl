@@ -105,7 +105,7 @@ def QLearning(env, learning, discount, epsilon, min_eps, episodes):
 
 
 # Run Q-learning algorithm
-q_table, rewards = QLearning(env, 0.2, 0.9, 0.8, 0, 500)
+q_table, rewards = QLearning(env, 0.2, 0.9, 0.8, 0, 15_000)
 
 joblib.dump(q_table, 'q_table_20.pkl')
 joblib.dump(rewards, 'avg_rewards.pkl')
