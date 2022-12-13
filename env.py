@@ -10,13 +10,14 @@ import time
 import signal
 import csv
 
+
 class TrackmaniaEnv(gym.Env):
 
     metadata = {'render.modes': ['human']}
 
     def __init__(self, server_name="TMInterface0"):
         super().__init__()
-        
+
         print(f'Connecting to {server_name}...')
 
         # Instanciate Trackmania client and set track name
@@ -35,13 +36,15 @@ class TrackmaniaEnv(gym.Env):
 
         while not self.iface.registered:
             time.sleep(0.1)
-        
+
         # Set low and upper bounds of observation space
         # (X, Y, Z, Velocity) Coordinates
-        self.low_coords = np.array([500, 30, 480, 0]).astype(np.int16) #*10
-        self.high_coords = np.array([570, 35, 720, 250]).astype(np.int16) #*10
+        self.low_coords = np.array([500, 27, 480, 0]).astype(np.int16)  # *10
+        self.high_coords = np.array(
+            [570, 35, 720, 250]).astype(np.int16)  # *10
 
-        self.observation_space = spaces.Box(self.low_coords, self.high_coords, shape=(4,), dtype=np.int16, seed=123)
+        self.observation_space = spaces.Box(
+            self.low_coords, self.high_coords, shape=(4,), dtype=np.int16, seed=123)
         self.action_space = spaces.Discrete(4)
         self.steps = 0
         # self.checkpoints_locations = self.checkpoints.copy()
@@ -49,30 +52,30 @@ class TrackmaniaEnv(gym.Env):
     def step(self, action):
 
         observation = self.low_coords
-        self.steps  += 1
-        reward      = 0
-        done        = False
-        info        = {}
+        self.steps += 1
+        reward = 0
+        done = False
+        info = {}
 
         # Block until client returns info
         while not self.client.info_ready:
             time.sleep(0)
-        
+
         # Info ready from client
         if self.client.info_ready:
-            
+
             # print(action)
             # training step returns an action that we need to send to the client
             self.client.action = action
 
             state = [
-                int(self.client.state_env[0]), #*10
+                int(self.client.state_env[0]),  # *10
                 int(self.client.state_env[1]),
-                int(self.client.state_env[2]), #*10
+                int(self.client.state_env[2]),  # *10
                 int(self.client.state_env[3])
             ]
 
-            # # Get the client state 
+            # # Get the client state
             # state = [
             #     self.client.state_env[0] - self.checkpoints_locations[0][0],
             #     self.client.state_env[1] - self.checkpoints_locations[0][1],
@@ -96,15 +99,15 @@ class TrackmaniaEnv(gym.Env):
         return observation, reward, done, info
 
     def reset(self):
-        print("resetting env...")
+        # print("resetting env...")
         self.steps = 0
         observation = self.low_coords
         return observation
-        
+
     def render(self, mode='human'):
         pass
 
-    def close (self):
+    def close(self):
         print("closing env...")
         self.client.kill = False
         self.client.waiting_for_env = False
