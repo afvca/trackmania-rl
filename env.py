@@ -39,12 +39,23 @@ class TrackmaniaEnv(gym.Env):
 
         # Set low and upper bounds of observation space
         # (X, Y, Z, Velocity) Coordinates
-        self.low_coords = np.array([500, 27, 480, 0]).astype(np.int16)  # *10
-        self.high_coords = np.array(
-            [570, 35, 720, 250]).astype(np.int16)  # *10
+        # self.low_coords = np.array([500, 27, 480, 0]).astype(np.int16)  # *10
+        # self.high_coords = np.array(
+        #     [570, 35, 720, 250]).astype(np.int16)  # *10
+
+        # self.observation_space = spaces.Box(
+        #     self.low_coords, self.high_coords, shape=(4,), dtype=np.int16, seed=123)
+        # self.action_space = spaces.Discrete(4)
+        # self.steps = 0
+        # # self.checkpoints_locations = self.checkpoints.copy()
+
+        # self.low_coords = np.array([510, 30, 485]).astype(np.int16)
+        # self.high_coords = np.array([545, 34, 714]).astype(np.int16)
+        self.low_coords = np.array([51, 30, 48]).astype(np.int16)
+        self.high_coords = np.array([56, 35, 73]).astype(np.int16)
 
         self.observation_space = spaces.Box(
-            self.low_coords, self.high_coords, shape=(4,), dtype=np.int16, seed=123)
+            self.low_coords, self.high_coords, shape=(3,), dtype=np.int16, seed=123)
         self.action_space = spaces.Discrete(4)
         self.steps = 0
         # self.checkpoints_locations = self.checkpoints.copy()
@@ -68,11 +79,17 @@ class TrackmaniaEnv(gym.Env):
             # training step returns an action that we need to send to the client
             self.client.action = action
 
+            # state = [
+            #     int(self.client.state_env[0]),  # *10
+            #     int(self.client.state_env[1]),
+            #     int(self.client.state_env[2]),  # *10
+            #     int(self.client.state_env[3])
+            # ]
+
             state = [
-                int(self.client.state_env[0]),  # *10
+                int(round(self.client.state_env[0]/10, 0)),
                 int(self.client.state_env[1]),
-                int(self.client.state_env[2]),  # *10
-                int(self.client.state_env[3])
+                int(round(self.client.state_env[2]/10, 0))
             ]
 
             # # Get the client state

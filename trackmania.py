@@ -26,7 +26,7 @@ class Trackmania(Client):
 
         self.total_reward = 0
         self.max_score = 0
-        self.max_race_time = 30000
+        self.max_race_time = 25_000
         self.best_time = float("inf")
         self.race_time = 0
 
@@ -53,7 +53,7 @@ class Trackmania(Client):
     def on_registered(self, iface: TMInterface) -> None:
         iface.execute_command('set controller none')  # turn off bruteforce
         # iface.execute_command('set speed 10') # set race speed
-        iface.execute_command('set sim_speed 20')  # set simulation speed
+        iface.execute_command('set sim_speed 1')  # set simulation speed
         iface.set_timeout(200000)  # timeout after 200 secs
         print(f'Registered to {iface.server_name}')
 
@@ -77,13 +77,6 @@ class Trackmania(Client):
         #         sim_clear_buffer=True
         #     )
 
-        if self.race_time >= self.max_race_time:
-            print("timeout")
-            self.finished = True
-            self.update_reward("timeout")
-            # iface.prevent_simulation_finish()
-            # self.restart_simulation(iface)
-
         if self.initial_state == None and _time == 0:
             self.initial_state = iface.get_simulation_state()
 
@@ -101,7 +94,7 @@ class Trackmania(Client):
             if len(self.checkpoints_locations) > 1:
                 # compare the first remaining checkpoint to current Z coordinate of the car
                 # *10
-                if np.round(self.checkpoints_locations[0][2], 0).astype(int) < np.round(posx[2], 0).astype(int):
+                if np.round(self.checkpoints_locations[0][2], 0).astype(int) < np.round(posx[2]/10, 0).astype(int):
                     # if z coordinate of the car already passed the checkpoint
                     # remove the checkpoint from the current remaining cp's
                     # update the reward function to reflect the cp passage
@@ -109,7 +102,7 @@ class Trackmania(Client):
                     self.update_reward("checkpoint", len(
                         self.checkpoints) - len(self.checkpoints_locations))
             else:
-                if np.round(self.checkpoints_locations[0][2], 0).astype(int) < np.round(posx[2], 0).astype(int):
+                if np.round(self.checkpoints_locations[0][2], 0).astype(int) < np.round(posx[2]/10, 0).astype(int):
                     # if z coordinate of the car already passed the final checkpoint (finish line)
                     # update the reward function to reflect the victory
                     print("SENNA WINS AGAIN!!! WHAT A WONDERFUL DISPLAY OF SKILL!!!")
@@ -117,17 +110,27 @@ class Trackmania(Client):
                     self.finished = True
                     self.win = True
 
+            # update velocity reward
+            velocity_kmh = np.linalg.norm(self.state.velocity) * 3.6
+            self.update_reward("velocity", velocity_kmh)
+
+            # update timeout reward
+            if self.race_time >= self.max_race_time:
+                print("timeout")
+                self.finished = True
+                self.update_reward("timeout")
+                # iface.prevent_simulation_finish()
+                # self.restart_simulation(iface)
+
             # Check if car has fallen off the track (Y coordinate, index 1 from position object)
             if self.state.position[1] < 30:
                 # print("total reward:", self.total_reward)
                 print("out of bounds")
                 self.finished = True
                 self.out_of_bounds = 1
-                self.update_reward("out_of_bounds")
+                self.update_reward("out_of_bounds", len(
+                    self.checkpoints)-len(self.checkpoints_locations))
                 # self.restart_simulation(iface)
-
-            velocity_kmh = np.linalg.norm(self.state.velocity) * 3.6
-            self.update_reward("velocity", velocity_kmh)
 
             posx += [velocity_kmh]
             self.state_env = posx
@@ -166,7 +169,7 @@ class Trackmania(Client):
         if event == 'checkpoint':
             # print("reward cp")
             # reward += .1 * (self.max_race_time - self.race_time)
-            self.total_reward += value * 100
+            self.total_reward += value * 200
         elif event == 'finish':
             # print("finish")
             self.total_reward += value
@@ -174,8 +177,8 @@ class Trackmania(Client):
         elif event == 'velocity':
             self.total_reward += value * 1
         # update reward if out_of_bounds or timeout
-        elif event == 'out_of_bounds' or event == 'timeout':
-            self.total_reward -= 1_000
+        elif event == 'out_of_bounds':
+            self.total_reward -= 10_000
 
         ######
         # TODO: add more reward calculations... (dif tempo, distancia prox checkpoint)
