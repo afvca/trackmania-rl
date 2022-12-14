@@ -24,6 +24,7 @@ class Trackmania(Client):
         self.win = False
         self.close_client = False
 
+        self.reward = 0
         self.total_reward = 0
         self.max_score = 0
         self.max_race_time = 60_000
@@ -87,6 +88,7 @@ class Trackmania(Client):
         if (_time % 200 == 0 and _time >= 0) or self.finished:
 
             self.waiting_for_env = True
+            self.reward = 0
             self.state = iface.get_simulation_state()
 
             posx = self.state.position
@@ -161,6 +163,7 @@ class Trackmania(Client):
             # action = actions[0]
             # action = actions[random.randint(1,3)]
             action = actions[self.action]
+            self.total_reward += self.reward
 
             self.current_action = {
                 'sim_clear_buffer': False,
@@ -184,16 +187,16 @@ class Trackmania(Client):
         if event == 'checkpoint':
             # print("reward cp")
             # reward += .1 * (self.max_race_time - self.race_time)
-            self.total_reward += value * 200
+            self.reward += value * 200
         elif event == 'finish':
             # print("finish")
-            self.total_reward += value
+            self.reward += value
         # update reward if distance driven
         elif event == 'velocity':
-            self.total_reward += value * 1
+            self.reward += value * 1
         # update reward if out_of_bounds or timeout
         elif event == 'out_of_bounds':
-            self.total_reward -= 200
+            self.reward -= 200
 
         ######
         # TODO: add more reward calculations... (dif tempo, distancia prox checkpoint)
