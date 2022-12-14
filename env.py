@@ -102,7 +102,7 @@ class TrackmaniaEnv(gym.Env):
             # # breakpoint()
 
             # Get the reward from client
-            reward = self.client.total_reward
+            reward = int(self.client.total_reward)
 
             # Unblock client to perform next action
             self.client.info_ready = False
@@ -118,7 +118,7 @@ class TrackmaniaEnv(gym.Env):
     def reset(self):
         # print("resetting env...")
         self.steps = 0
-        observation = self.low_coords
+        observation = [53, 34, 49]
         return observation
 
     def render(self, mode='human'):

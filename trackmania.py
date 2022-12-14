@@ -53,7 +53,7 @@ class Trackmania(Client):
     def on_registered(self, iface: TMInterface) -> None:
         iface.execute_command('set controller none')  # turn off bruteforce
         # iface.execute_command('set speed 10') # set race speed
-        iface.execute_command('set sim_speed 1')  # set simulation speed
+        iface.execute_command('set sim_speed 20')  # set simulation speed
         iface.set_timeout(200000)  # timeout after 200 secs
         print(f'Registered to {iface.server_name}')
 

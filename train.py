@@ -3,8 +3,23 @@ import gym
 import matplotlib.pyplot as plt
 import joblib
 
-
 from env import TrackmaniaEnv
+
+
+def save_outputs(episode, rewards, moving_avg, q_table):
+    joblib.dump(q_table, f'./output_dicts/q_table_{episode}.pkl')
+    joblib.dump(rewards, f'./output_dicts/rewards_{episode}.pkl')
+    joblib.dump(moving_avg, f'./output_dicts/avg_rewards_{episode}.pkl')
+
+    # Plot Rewards
+    plt.plot((np.arange(len(rewards)) + 1), rewards)
+    plt.plot((np.arange(len(moving_avg)) + 1), moving_avg)
+    plt.xlabel('Episodes')
+    plt.ylabel('Reward')
+    plt.title('Reward vs Episodes')
+    plt.savefig(f'output_dicts/rewards_{episode}.jpg')
+    plt.close()
+
 
 # Import and initialize Trackmania Env
 env = TrackmaniaEnv()
@@ -33,7 +48,7 @@ def QLearning(env, learning, discount, epsilon, min_eps, episodes):
     moving_averages_list = []
 
     # Calculate episodic reduction in epsilon
-    reduction = (epsilon - min_eps)/episodes
+    reduction = (epsilon - min_eps)/(episodes-1000)
 
     # Run Q learning algorithm
     for i in range(episodes):
@@ -85,8 +100,9 @@ def QLearning(env, learning, discount, epsilon, min_eps, episodes):
             state_adj = state2_adj
 
         # Decay epsilon
-        if epsilon > min_eps:
-            epsilon -= reduction
+        if i < 18_000:
+            if epsilon > min_eps:
+                epsilon -= reduction
 
         # Track rewards
         reward_list.append(reward)
@@ -113,23 +129,27 @@ def QLearning(env, learning, discount, epsilon, min_eps, episodes):
             print('Episode {} Moving Average Reward: {}'.format(
                 i+1, window_average))
 
+        SAVE_EVERY = 1_000
+        if (i+1) % SAVE_EVERY == 0:
+            save_outputs(i, reward_list, moving_averages_list, Q)
+
     env.close()
 
     return Q, reward_list, moving_averages_list
 
 
 # Run Q-learning algorithm
-q_table, rewards, moving_avg = QLearning(env, 0.2, 0.9, 0.8, 0.05, 5_000)
+q_table, rewards, moving_avg = QLearning(env, 0.2, 0.9, 0.8, 0.05, 20_000)
 
-joblib.dump(q_table, './output_dicts/q_table_4000.pkl')
-joblib.dump(rewards, './output_dicts/rewards.pkl')
-joblib.dump(moving_avg, './output_dicts/avg_rewards.pkl')
+# joblib.dump(q_table, './output_dicts/q_table_1.pkl')
+# joblib.dump(rewards, './output_dicts/rewards_1.pkl')
+# joblib.dump(moving_avg, './output_dicts/avg_rewards_1.pkl')
 
-# Plot Rewards
-plt.plot((np.arange(len(rewards)) + 1), rewards)
-plt.plot((np.arange(len(moving_avg)) + 1), moving_avg)
-plt.xlabel('Episodes')
-plt.ylabel('Reward')
-plt.title('Reward vs Episodes')
-plt.savefig('output_dicts/rewards.jpg')
-plt.close()
+# # Plot Rewards
+# plt.plot((np.arange(len(rewards)) + 1), rewards)
+# plt.plot((np.arange(len(moving_avg)) + 1), moving_avg)
+# plt.xlabel('Episodes')
+# plt.ylabel('Reward')
+# plt.title('Reward vs Episodes')
+# plt.savefig('output_dicts/rewards.jpg')
+# plt.close()

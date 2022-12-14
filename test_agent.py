@@ -144,7 +144,3 @@ def QLearning(env, qtable):
     env.close()
 
     return Q
-
-
-# Run Q-learning algorithm
-q_table = QLearning(env, './output_dicts/q_table_5000.pkl')
