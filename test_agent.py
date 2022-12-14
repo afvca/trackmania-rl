@@ -95,7 +95,12 @@ def QLearning(env, qtable):
     num_states = np.round(num_states, 0).astype(int)
 
     # Initialize Q table
+    # Q = np.zeros((num_states[0], num_states[1], num_states[2],
+    #              num_states[3], env.action_space.n), dtype=np.int16)
+    # print(f"{Q=}")
+    # print(Q.shape)
     Q = joblib.load(qtable)
+    print(Q.shape)
 
     # Initialize variables to track rewards
     reward_list = []
@@ -105,7 +110,6 @@ def QLearning(env, qtable):
     done = False
     total_reward, reward = 0, 0
     state = env.reset()
-    print("first state:", state)
 
     # Discretize state
     state_adj = (state - env.observation_space.low)
@@ -114,7 +118,7 @@ def QLearning(env, qtable):
     while done != True:
 
         # Determine next action - epsilon greedy strategy
-        action = np.argmax(Q[state_adj[0], state_adj[1], state_adj[2]])
+        action = np.argmax(Q[state_adj[0], state_adj[1]])
 
         # Get next state and reward
         state2, reward, done, info = env.step(action)
@@ -131,16 +135,19 @@ def QLearning(env, qtable):
         state2_adj = np.round(state2_adj, 0).astype(int)
 
         # Allow for terminal states
-        if done and state2[2] >= 71:
-            Q[state_adj[0], state_adj[1], state_adj[2], action] = reward
+        if done:
+            Q[state_adj[0], state_adj[1], action] = reward
 
         # Update variables
         state_adj = state2_adj
 
     # Track rewards
     reward_list.append(reward)
-    print('Test Run. Average Reward: {}'.format(reward))
 
     env.close()
 
-    return Q
+    return Q, reward_list
+
+
+# Run Q-learning algorithm
+q_table, reward = QLearning(env, './output_dicts/q_table_lr02eps60_last.pkl')

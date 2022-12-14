@@ -38,31 +38,21 @@ class TrackmaniaEnv(gym.Env):
             time.sleep(0.1)
 
         # Set low and upper bounds of observation space
-        # (X, Y, Z, Velocity) Coordinates
-        # self.low_coords = np.array([500, 27, 480, 0]).astype(np.int16)  # *10
-        # self.high_coords = np.array(
-        #     [570, 35, 720, 250]).astype(np.int16)  # *10
+        self.starting_coords = np.array([53, 49]).astype(np.int16)
+        # inside (52, 54)
 
-        # self.observation_space = spaces.Box(
-        #     self.low_coords, self.high_coords, shape=(4,), dtype=np.int16, seed=123)
-        # self.action_space = spaces.Discrete(4)
-        # self.steps = 0
-        # # self.checkpoints_locations = self.checkpoints.copy()
-
-        # self.low_coords = np.array([510, 30, 485]).astype(np.int16)
-        # self.high_coords = np.array([545, 34, 714]).astype(np.int16)
-        self.low_coords = np.array([51, 30, 48]).astype(np.int16)
-        self.high_coords = np.array([56, 35, 73]).astype(np.int16)
+        self.low_coords = np.array([51, 48]).astype(np.int16)
+        self.high_coords = np.array([56, 73]).astype(np.int16)
 
         self.observation_space = spaces.Box(
-            self.low_coords, self.high_coords, shape=(3,), dtype=np.int16, seed=123)
+            self.low_coords, self.high_coords, shape=(2,), dtype=np.int16, seed=123)
         self.action_space = spaces.Discrete(4)
         self.steps = 0
         # self.checkpoints_locations = self.checkpoints.copy()
 
     def step(self, action):
 
-        observation = self.low_coords
+        observation = self.starting_coords
         self.steps += 1
         reward = 0
         done = False
@@ -87,9 +77,8 @@ class TrackmaniaEnv(gym.Env):
             # ]
 
             state = [
-                int(round(self.client.state_env[0]/10, 0)),
-                int(self.client.state_env[1]),
-                int(round(self.client.state_env[2]/10, 0))
+                int(round(self.client.state_env[0], 0)),
+                int(round(self.client.state_env[2], 0))
             ]
 
             # # Get the client state
@@ -118,7 +107,7 @@ class TrackmaniaEnv(gym.Env):
     def reset(self):
         # print("resetting env...")
         self.steps = 0
-        observation = [53, 34, 49]
+        observation = self.starting_coords
         return observation
 
     def render(self, mode='human'):

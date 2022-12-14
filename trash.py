@@ -30,13 +30,32 @@ import matplotlib.pyplot as plt
 
 epsilon = 0.8
 min_eps = 0.05
-reduction = (epsilon - min_eps)/(200-10)
+reduction = (epsilon - min_eps)/(200-40)
 eps_list = []
 # Decay epsilon
 for i in range(200):
     if i < 190:
         if epsilon > min_eps:
             epsilon -= reduction
+    eps_list.append(epsilon)
+
+# Plot Rewards
+plt.plot((np.arange(len(eps_list)) + 1), eps_list)
+plt.xlabel('Episodes')
+plt.ylabel('Reward')
+plt.title('Reward vs Episodes')
+plt.show()
+plt.close()
+
+epsilon = 0.8
+min_eps = 0.05
+reduction = 0.9995
+eps_list = []
+# Decay epsilon
+for i in range(20000):
+    if i < 16000:
+        if epsilon > min_eps:
+            epsilon *= reduction
     eps_list.append(epsilon)
 
 # Plot Rewards

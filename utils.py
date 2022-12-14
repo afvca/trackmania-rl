@@ -6,13 +6,6 @@ import time
 from datetime import datetime
 
 actions = [
-    # Nothing
-    {
-        "accelerate": False,
-        "left": False,
-        "right": False,
-        "brake": False,
-    },
     # Accelerate
     {
         "accelerate": True,
@@ -32,6 +25,13 @@ actions = [
         "accelerate": False,
         "left": False,
         "right": True,
+        "brake": False,
+    },
+    # Nothing
+    {
+        "accelerate": False,
+        "left": False,
+        "right": False,
         "brake": False,
     }
     # # Brake
