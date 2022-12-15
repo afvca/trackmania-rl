@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 import joblib
 
 rewards = joblib.load(
-    "./output_dicts/lr08_eps60pct/rewards_lr02eps_last.pkl")
+    "./output_dicts/rewards_NEW_last.pkl")
 mov_avg = joblib.load(
-    "./output_dicts/lr08_eps60pct/avg_rewards_lr02eps_last.pkl")
+    "./output_dicts/avg_rewards_NEW_last.pkl")
 mov_avg_500, mov_avg_100 = [], []
 
-EPISODES = 1_000
+EPISODES = 5_000
 epsilon = 0.8
 min_eps = 0.0
 reduction = (epsilon - min_eps)/EPISODES
@@ -72,7 +72,7 @@ ax1.plot((np.arange(len(mov_avg_500)) + 1),
          mov_avg_500, label='avg_500')
 ax1.plot((np.arange(len(mov_avg_100)) + 1),
          mov_avg_100, label='avg_100')
-ax2.plot((np.arange(len(eps_list)) + 1), eps_list, 'black', linestyle='--')
+# ax2.plot((np.arange(len(eps_list)) + 1), eps_list, 'black', linestyle='--')
 plt.xlabel('Episodes')
 ax1.set_ylabel('Reward')
 ax2.set_ylabel('Epsilon')

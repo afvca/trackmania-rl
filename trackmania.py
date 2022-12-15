@@ -94,6 +94,9 @@ class Trackmania(Client):
             posx = self.state.position
             posx_disc = np.round(np.array(posx)/10, 0).astype(int)
 
+            # if posx_disc[1] < 54:
+            #     self.reward += -5_000
+
             if (posx_disc == self.prev_state).all():
                 self.idle_count += 1
             else:
@@ -124,11 +127,11 @@ class Trackmania(Client):
                     # if z coordinate of the car already passed the final checkpoint (finish line)
                     # update the reward function to reflect the victory
                     print("SENNA WINS AGAIN!!! WHAT A WONDERFUL DISPLAY OF SKILL!!!")
-                    self.update_reward("finish", 10_000)
+                    self.update_reward("finish", 100_000)
                     self.finished = True
                     self.win = True
 
-            # # update velocity reward
+            # # # update velocity reward
             # velocity_kmh = np.linalg.norm(self.state.velocity) * 3.6
             # self.update_reward("velocity", velocity_kmh)
 
@@ -143,7 +146,7 @@ class Trackmania(Client):
             # Check if car has fallen off the track (Y coordinate, index 1 from position object)
             if (posx_disc[0] < 52) or (posx_disc[0] > 54):
                 # print("total reward:", self.total_reward)
-                # self.finished = True
+                self.finished = True
                 self.out_of_bounds = 1
                 self.update_reward("out_of_bounds", len(
                     self.checkpoints)-len(self.checkpoints_locations))
@@ -186,8 +189,8 @@ class Trackmania(Client):
         # update reward if checkpoint is passed
         if event == 'checkpoint':
             # print("reward cp")
-            # reward += .1 * (self.max_race_time - self.race_time)
-            self.reward += value * 200
+            # self.reward += .01 * (self.max_race_time - self.race_time) * value
+            self.reward += value * 1_000
         elif event == 'finish':
             # print("finish")
             self.reward += value

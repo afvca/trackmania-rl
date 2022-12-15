@@ -51,10 +51,10 @@ def QLearning(env, learning, discount, epsilon, min_eps, episodes):
 
     # Calculate episodic reduction in epsilon
     reduction = (epsilon - min_eps)/(episodes * 1)
-
+    decay_rate = 0.01
     # Run Q learning algorithm
     for i in range(episodes):
-
+        epsilon = (1 - decay_rate)**i
         # Initialize parameters
         done = False
         total_reward, reward = 0, 0
@@ -98,16 +98,16 @@ def QLearning(env, learning, discount, epsilon, min_eps, episodes):
                 Q[state_adj[0], state_adj[1], action] += delta
 
             # Update variables
-            # total_reward += reward
+            total_reward += reward
             state_adj = state2_adj
 
         # Decay epsilon
-        if i < episodes * 1:
-            if epsilon > min_eps:
-                epsilon -= reduction
+        # if i < episodes * 1:
+        #     if epsilon > min_eps:
+        #         epsilon -= reduction
 
         # Track rewards
-        reward_list.append(reward)
+        reward_list.append(total_reward)
 
         # Loop through the array to consider
         # every window of size 100
@@ -141,11 +141,11 @@ def QLearning(env, learning, discount, epsilon, min_eps, episodes):
 
 
 # Run Q-learning algorithm
-q_table, rewards, moving_avg = QLearning(env, 0.05, 0.9, 0.8, 0.0, 1_000)
+q_table, rewards, moving_avg = QLearning(env, 0.2, 0.9, 0.8, 0.0, 10_000)
 
-joblib.dump(q_table, './output_dicts/q_table_lr005_last.pkl')
-joblib.dump(rewards, './output_dicts/rewards_lr005_last.pkl')
-joblib.dump(moving_avg, './output_dicts/avg_rewards_lr005_last.pkl')
+joblib.dump(q_table, './output_dicts/q_table_NEW_last.pkl')
+joblib.dump(rewards, './output_dicts/rewards_NEW_last.pkl')
+joblib.dump(moving_avg, './output_dicts/avg_rewards_NEW_last.pkl')
 
 # Plot Rewards
 plt.plot((np.arange(len(rewards)) + 1), rewards)
