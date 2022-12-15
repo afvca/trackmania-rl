@@ -139,10 +139,11 @@ def QLearning(env, qtable):
             Q[state_adj[0], state_adj[1], action] = reward
 
         # Update variables
+        total_reward += reward
         state_adj = state2_adj
 
     # Track rewards
-    reward_list.append(reward)
+    reward_list.append(total_reward)
 
     env.close()
 
@@ -150,4 +151,4 @@ def QLearning(env, qtable):
 
 
 # Run Q-learning algorithm
-q_table, reward = QLearning(env, './output_dicts/q_table_lr02eps60_last.pkl')
+q_table, reward = QLearning(env, './output_dicts/q_table_NEW_last.pkl')

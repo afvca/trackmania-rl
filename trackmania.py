@@ -57,7 +57,7 @@ class Trackmania(Client):
     def on_registered(self, iface: TMInterface) -> None:
         iface.execute_command('set controller none')  # turn off bruteforce
         # iface.execute_command('set speed 10') # set race speed
-        iface.execute_command('set sim_speed 20')  # set simulation speed
+        iface.execute_command('set sim_speed 2')  # set simulation speed
         iface.set_timeout(200000)  # timeout after 200 secs
         print(f'Registered to {iface.server_name}')
 
@@ -196,7 +196,7 @@ class Trackmania(Client):
             self.reward += value * 1
         # update reward if out_of_bounds or timeout
         elif event == 'out_of_bounds':
-            self.reward -= 200
+            self.reward -= 50_000
 
         ######
         # TODO: add more reward calculations... (dif tempo, distancia prox checkpoint)

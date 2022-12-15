@@ -91,7 +91,7 @@ class TrackmaniaEnv(gym.Env):
             # # breakpoint()
 
             # Get the reward from client
-            reward = int(self.client.total_reward)
+            reward = int(self.client.reward)
 
             # Unblock client to perform next action
             self.client.info_ready = False
